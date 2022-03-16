@@ -82,10 +82,11 @@ def get(message):
         with open(file_name, "r") as file:
             ips = json.load(file)
             current_time = datetime.now().strftime('%H:%M:%S')
-            for ip in ips.items():
-                temp_names = ip["temp_names"]
-                hum_names = ip["hum_names"]
-                name = ip['name']
+            for item in ips.items():
+                ip = item[0]
+                temp_names = item[1]["temp_names"]
+                hum_names = item[1]["hum_names"]
+                name = item[1]["name"]
                 try:
                     response = requests.post(f"http://{ip}/sensors", data={'key': '8Synbt9N7p5yttx8'},
                                              timeout=15).json()
