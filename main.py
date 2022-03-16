@@ -77,15 +77,18 @@ def remove_callback(callback_query):
 @bot.message_handler(func=lambda message: message.text == "Get")
 def get(message):
     res = ""
-    temp_names = ["Температура воздуха", "OneWire_a", "OneWire_b", "OneWire_c", "OneWire_d", "OneWire_e"]
-    hum_names = ["Влажность воздуха", "a", "b", "c", "d"]
+
     if path.exists(file_name):
         with open(file_name, "r") as file:
             ips = json.load(file)
             current_time = datetime.now().strftime('%H:%M:%S')
-            for ip, name in ips.items():
+            for ip in ips.items():
+                temp_names = ip["temp_names"]
+                hum_names = ip["hum_names"]
+                name = ip['name']
                 try:
-                    response = requests.post(f"http://{ip}/sensors", data={'key':'8Synbt9N7p5yttx8'}, timeout=15).json()
+                    response = requests.post(f"http://{ip}/sensors", data={'key': '8Synbt9N7p5yttx8'},
+                                             timeout=15).json()
                     msg = f"+++ Values for {name} on {current_time} +++"
                     msg += "\n"
                     msg += f"+++ Ip {ip} +++"
