@@ -85,7 +85,7 @@ def get(message):
             current_time = datetime.now().strftime('%H:%M:%S')
             for ip, name in ips.items():
                 try:
-                    response = requests.get(f"http://{ip}/", timeout=5).json()
+                    response = requests.post(f"http://{ip}/sensors", data={'key':'8Synbt9N7p5yttx8'}, timeout=15).json()
                     msg = f"+++ Values for {name} on {current_time} +++"
                     msg += "\n"
                     msg += f"+++ Ip {ip} +++"
@@ -98,7 +98,7 @@ def get(message):
                     msg += get_name_and_values(hum_names, response["sensors"]["humidity"])
                     msg += "\n"
                     msg += "++++++++++++++++++++++++++++++++++"
-                except:
+                except requests.exceptions.RequestException as e:
                     msg = f"+++ Values for {name} on {current_time} +++"
                     msg += "\n"
                     msg += f"+++ Ip {ip} +++"
