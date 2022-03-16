@@ -35,7 +35,24 @@ def add(message):
         if os.stat(file_name).st_size != 0:
             with open(file_name, "r") as file:
                 data = json.load(file)
-                data[args[1]] = args[2]
+                data[args[1]] = {
+                    "name": args[2],
+                    "temp_names": [
+                        "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 \u0432\u043e\u0437\u0434\u0443\u0445\u0430",
+                        "\u0422\u0435\u043c\u043f\u0440\u0435\u0442\u0443\u0440\u0430 \u043a\u043e\u0442\u043b\u0430",
+                        "\u0422\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 \u0432\u043d\u0443\u0442\u0440\u0438",
+                        "OneWire_c",
+                        "OneWire_d",
+                        "OneWire_e"
+                    ],
+                    "hum_names": [
+                        "\u0412\u043b\u0430\u0436\u043d\u043e\u0441\u0442\u044c \u0432\u043e\u0437\u0434\u0443\u0445\u0430",
+                        "\u0412\u043b\u0430\u0436\u043d\u043e\u0441\u0442\u044c \u043f\u043e\u0447\u0432\u044b",
+                        "b",
+                        "c",
+                        "d"
+                    ]
+                }
         else:
             data[args[1]] = args[2]
         with open(file_name, "w") as file:
@@ -51,7 +68,9 @@ def remove(message):
             with open(file_name, "r") as file:
                 data = json.load(file)
                 if len(data) != 0:
-                    for ip, name in data.items():
+                    for item in data.items():
+                        ip = item[0]
+                        name = item[1]["name"]
                         gh_to_remove_menu.add(InlineKeyboardButton(name, callback_data="remove_" + ip))
                     bot.send_message(message.chat.id, "Chose GH to remove", reply_markup=gh_to_remove_menu)
                 else:
@@ -89,29 +108,32 @@ def get(message):
                 name = item[1]["name"]
                 try:
                     response = requests.post(f"http://{ip}/sensors", data={'key': '8Synbt9N7p5yttx8'},
-                                             timeout=15).json()
-                    msg = f"+++ Values for {name} on {current_time} +++"
+                                             timeout=1).json()
+                    msg = "<pre>"
+                    msg += f" Values for {name} on {current_time} ".center(35, '+')
                     msg += "\n"
-                    msg += f"+++ Ip {ip} +++"
+                    msg += f" Ip {ip} ".center(35, '+')
                     msg += "\n"
-                    msg += f"Temperature".center(35, '=')
+                    msg += f" Temperature ".center(35, '=')
                     msg += "\n"
                     msg += get_name_and_values(temp_names, response["sensors"]["temperature"])
-                    msg += f"Humidity".center(35, '=')
+                    msg += f" Humidity ".center(35, '=')
                     msg += "\n"
                     msg += get_name_and_values(hum_names, response["sensors"]["humidity"])
-                    msg += "\n"
-                    msg += "++++++++++++++++++++++++++++++++++"
+                    msg += "+".center(35, '+')
+                    msg += "</pre>"
                 except requests.exceptions.RequestException as e:
-                    msg = f"+++ Values for {name} on {current_time} +++"
+                    msg = "<pre>"
+                    msg += f" Values for {name} on {current_time} ".center(35, '+')
                     msg += "\n"
-                    msg += f"+++ Ip {ip} +++"
+                    msg += f" Ip {ip} ".center(35, '+')
                     msg += "\n"
-                    msg += "Cannot get data".center(40, " ")
+                    msg += "Cannot get data".center(35, " ")
                     msg += "\n"
-                    msg += "+++++++++++++++++++++++++++++++++++"
+                    msg += "+".center(35, '+')
+                    msg += "</pre>"
                 res += msg + "\n\n"
-        bot.send_message(message.chat.id, res)
+        bot.send_message(message.chat.id, res, parse_mode="HTML")
 
 
 def get_name_and_values(names, response):
@@ -120,7 +142,7 @@ def get_name_and_values(names, response):
     for t in response:
         values.append(response[t]["val"])
     for i, val in enumerate(values):
-        msg += f"{names[i] :<25}{val : >25}\n"
+        msg += f"{names[i] :<25}{val : >10}\n"
     return msg
 
 
