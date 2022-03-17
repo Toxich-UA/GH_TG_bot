@@ -8,6 +8,7 @@ from telebot.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardBut
 
 key = "API_KEY"
 file_name = "ips.json"
+spaces_amount = 25
 API_KEY = os.environ.get(key)
 bot = telebot.TeleBot(API_KEY)
 
@@ -110,27 +111,27 @@ def get(message):
                     response = requests.post(f"http://{ip}/sensors", data={'key': '8Synbt9N7p5yttx8'},
                                              timeout=1).json()
                     msg = "<pre>"
-                    msg += f" Values for {name} on {current_time} ".center(35, '+')
+                    msg += f" Values for {name} on {current_time} ".center(spaces_amount, '+')
                     msg += "\n"
-                    msg += f" Ip {ip} ".center(35, '+')
+                    msg += f" Ip {ip} ".center(spaces_amount, '+')
                     msg += "\n"
-                    msg += f" Temperature ".center(35, '=')
+                    msg += f" Temperature ".center(spaces_amount, '=')
                     msg += "\n"
                     msg += get_name_and_values(temp_names, response["sensors"]["temperature"])
-                    msg += f" Humidity ".center(35, '=')
+                    msg += f" Humidity ".center(spaces_amount, '=')
                     msg += "\n"
                     msg += get_name_and_values(hum_names, response["sensors"]["humidity"])
-                    msg += "+".center(35, '+')
+                    msg += "+".center(spaces_amount, '+')
                     msg += "</pre>"
                 except requests.exceptions.RequestException as e:
                     msg = "<pre>"
-                    msg += f" Values for {name} on {current_time} ".center(35, '+')
+                    msg += f" Values for {name} on {current_time} ".center(spaces_amount, '+')
                     msg += "\n"
-                    msg += f" Ip {ip} ".center(35, '+')
+                    msg += f" Ip {ip} ".center(spaces_amount, '+')
                     msg += "\n"
-                    msg += "Cannot get data".center(35, " ")
+                    msg += "Cannot get data".center(spaces_amount, " ")
                     msg += "\n"
-                    msg += "+".center(35, '+')
+                    msg += "+".center(spaces_amount, '+')
                     msg += "</pre>"
                 res += msg + "\n\n"
         bot.send_message(message.chat.id, res, parse_mode="HTML")
